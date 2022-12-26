@@ -16,7 +16,7 @@ def getCountryName():
         if country.lower() not in CITY_DATA:
             print("please enter valid country name")
         else:
-            return country
+            return country.lower()
 
 def getBoth():
     """"function to get both month and day from the user"""
@@ -98,6 +98,7 @@ def load_data(city, month, day):
     df['Start Time'] = pd.to_datetime(df['Start Time'])
 
     # extract month and day of week from Start Time to create new columns
+    # if day or month not concluded with us, make check that the string is empty for this
     if month != "":
         df['month'] = df['Start Time'].dt.month
     if day != "":
@@ -159,7 +160,9 @@ def station_stats(df):
     print(df["End Station"].mode()[0])
 
     # display most frequent combination of start station and end station trip
-    print("most frequent start station:", df["Start Station"].mode()[0], ",and most frequent end station :", df["End Station"].mode()[0])
+    combination = df['Start Station'].astype(str) + " -> " + df['End Station'].astype(str)
+    most_combination = combination.mode()[0]
+    print("most frequent start station:", most_combination)
 
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
@@ -194,7 +197,10 @@ def user_stats(df):
         print("counts of gender :", df["Gender"].value_counts())
 
         # Display earliest, most recent, and most common year of birth
-        print("earliest, most recent, and most common year of birth :", df["Birth Year"].mean())
+        # print("earliest, most recent, and most common year of birth :", df["Birth Year"].mean())
+        print("earliest year of birth :", df["Birth Year"].min())
+        print("most recent year of birth :", df["Birth Year"].max())
+        print("most common year of birth :", df["Birth Year"].mode()[0])
 
         print("\nThis took %s seconds." % (time.time() - start_time))
         print('-'*40)
@@ -207,7 +213,7 @@ def individualTrip(df):
         print("would you like to view individual trip date?/ type -> yes, no")
         response = input("enter your response : ")
         if response.lower() == "yes":
-            print(df.head(number + 5))
+            print(df.iloc[number:number + 5,:])
             number += 5
         elif response.lower() == "no":
             break
